@@ -22,9 +22,9 @@ function exceptions_error_handler($severity, $message, $filename, $lineno) {
 // some globals
 $uniqueSpecies = array();
 $uniqueSpeciesString = "";
-//$sourceFile = "../eBirdDataSource/eBirdData_May-2013.txt";
+$sourceFile = "../eBirdDataSource/eBirdData_May-2013.txt";
 //$sourceFile = "../eBirdDataSource/tenmillion.txt";
-$sourceFile = "../eBirdDataSource/million.txt";
+//$sourceFile = "../eBirdDataSource/million.txt";
 
 $time_start = microtime(true);
 
@@ -65,11 +65,18 @@ function parseSourceFile() {
 			}
 			else
 			{
-				echo "*** Something was wrong with line $lastLineNum. It only had $lastLineNumCols columns.\n";
-				echo "*** the new line has $numCols columns so combining them doesn't solve it. ***\n";
-				echo $prevLine . "\n";
-				echo $line . "\n_______________________________\n";
+				if ($joinCount > 41) {
+					echo "*** Something was wrong with line $lastLineNum. It only had $lastLineNumCols columns.\n";
+					echo "*** the new line has $numCols columns so combining them doesn't solve it. ***\n";
+					echo $prevLine . "\n";
+					echo $line . "\n_______________________________\n";
 
+				// if the joined count was still less than 40, just continue so we keep tacking on rows. Maybe the
+				// new row will complete it
+				} else {
+					$prevLine = $prevLine . $line;
+					continue;
+				}
 			}
 			echo "\n";
 
@@ -101,9 +108,6 @@ function generateSpeciesTables() {
 		$cleanNames[] = "sp_$cleanName";
 	}
 
-
-	print_r($uniqueSpecies);
-	exit;
 
 	if (arrayHasDuplicates($cleanNames)) {
 
